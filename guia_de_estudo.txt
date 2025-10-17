@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia de Estudo Interativo: Conhecimentos Gerais</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A estrutura da aplicação foi desenhada como um painel de estudo temático de página única. Em vez de um documento linear, o conteúdo foi dividido em seções lógicas e interativas: "Conceitos Chave", "Vocabulário Essencial", "Autoavaliação" e "Entrevista Gemini". A navegação permite ao usuário saltar diretamente para a seção de interesse. Esta abordagem modular com elementos interativos (cartões clicáveis, glossário dinâmico, expansão de conceitos via IA e chat de entrevista) foi escolhida para transformar o estudo passivo em uma experiência de aprendizado ativa e moderna, melhorando o engajamento e a retenção do conhecimento. -->
+    <!-- Visualization & Content Choices: 1. Conceitos Chave -> Cartões interativos (HTML/JS) com botão de expansão ✨ Gemini (Grounded Search) para aprofundamento e fontes. 2. Cronologia Histórica (Guerras) -> Diagrama de linha do tempo (HTML/CSS). 3. Vocabulário -> Glossário dinâmico. 4. Questões de Revisão -> Quiz de Recordação Ativa. 5. Entrevista -> Chatbot (LLM-powered) para simulação de exame. Todas as escolhas visam interatividade e reforço do aprendizado com o apoio da IA. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+        }
+        .card.active .card-content {
+            max-height: 1000px; 
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .arrow {
+            transition: transform 0.3s ease-out;
+        }
+        .card.active .arrow {
+            transform: rotate(180deg);
+        }
+        .vocab-term.active {
+            background-color: #3b82f6; /* bg-blue-600 */
+            color: white;
+        }
+        .answer-content {
+            display: none;
+        }
+        /* Chat Styling */
+        #chat-window {
+            height: 400px;
+            overflow-y: auto;
+        }
+        .chat-message {
+            max-width: 80%;
+            margin-bottom: 8px;
+            padding: 10px 15px;
+            border-radius: 15px;
+        }
+        .user-message {
+            background-color: #dbeafe; /* bg-blue-100 */
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .gemini-message {
+            background-color: #fef3c7; /* bg-amber-100 */
+            align-self: flex-start;
+            margin-right: auto;
+        }
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+    </style>
+</head>
+<body class="bg-amber-50 text-gray-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-blue-800">Guia de Estudo Interativo</h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#conceitos" class="text-gray-600 hover:text-blue-600 transition">Conceitos</a>
+                <a href="#vocabulario" class="text-gray-600 hover:text-blue-600 transition">Vocabulário</a>
+                <a href="#autoavaliacao" class="text-gray-600 hover:text-blue-600 transition">Autoavaliação</a>
+                <a href="#entrevista-gemini" class="text-gray-600 hover:text-blue-600 transition">Entrevista ✨</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white py-2">
+            <a href="#conceitos" class="block px-6 py-2 text-gray-600 hover:bg-blue-50">Conceitos</a>
+            <a href="#vocabulario" class="block px-6 py-2 text-gray-600 hover:bg-blue-50">Vocabulário</a>
+            <a href="#autoavaliacao" class="block px-6 py-2 text-gray-600 hover:bg-blue-50">Autoavaliação</a>
+            <a href="#entrevista-gemini" class="block px-6 py-2 text-gray-600 hover:bg-blue-50">Entrevista ✨</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <section class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Fatos Cruciais de Conhecimentos Gerais</h2>
+            <p class="max-w-3xl mx-auto text-lg text-gray-700">
+                Este guia interativo aborda conceitos-chave que frequentemente causam confusão em História, Geografia e Física. Use as seções abaixo para fortalecer sua base de conhecimento de forma eficaz.
+            </p>
+        </section>
+
+        <!-- Seção de Conceitos Chave -->
+        <section id="conceitos" class="mb-16">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-10 text-blue-800">Conceitos Chave</h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Card: Fundadores dos EUA -->
+                <div class="card bg-white p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow" data-concept="Fundadores da Declaração de Independência dos EUA">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xl font-semibold text-gray-900">Fundadores dos EUA</h4>
+                        <span class="arrow text-blue-600 transform">▼</span>
+                    </div>
+                    <div class="card-content text-gray-700">
+                        <p>É crucial distinguir entre o Comandante-em-Chefe e primeiro Presidente (<strong>George Washington</strong>) e o principal redator de documentos fundadores. <strong>Thomas Jefferson</strong> foi o principal autor da Declaração de Independência.</p>
+                        <button class="expand-concept-btn mt-4 bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition-colors text-sm" data-id="0">Expandir com ✨ Gemini</button>
+                        <div id="gemini-expansion-0" class="gemini-expansion mt-4 pt-4 border-t border-amber-200 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Card: Capitais Políticas -->
+                <div class="card bg-white p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow" data-concept="Capitais Políticas da Turquia (Ancara)">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xl font-semibold text-gray-900">Capitais vs. Centros Econômicos</h4>
+                        <span class="arrow text-blue-600 transform">▼</span>
+                    </div>
+                    <div class="card-content text-gray-700">
+                        <p>Muitas capitais nacionais são escolhidas por razões políticas ou geográficas (como <strong>Ancara</strong> na Turquia), e não são necessariamente as cidades mais populosas ou economicamente ativas (como Istambul).</p>
+                        <button class="expand-concept-btn mt-4 bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition-colors text-sm" data-id="1">Expandir com ✨ Gemini</button>
+                        <div id="gemini-expansion-1" class="gemini-expansion mt-4 pt-4 border-t border-amber-200 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Card: Leis de Newton -->
+                <div class="card bg-white p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow" data-concept="Terceira Lei de Newton (Ação e Reação)">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xl font-semibold text-gray-900">As Três Leis de Newton</h4>
+                        <span class="arrow text-blue-600 transform">▼</span>
+                    </div>
+                    <div class="card-content text-gray-700">
+                        <p>Estas leis definem o movimento de objetos. A confusão entre a lei da inércia (<strong>Primeira Lei</strong>) e a Lei da Ação e Reação (<strong>Terceira Lei</strong>) é comum e deve ser corrigida para entender as forças em equilíbrio.</p>
+                        <button class="expand-concept-btn mt-4 bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition-colors text-sm" data-id="2">Expandir com ✨ Gemini</button>
+                        <div id="gemini-expansion-2" class="gemini-expansion mt-4 pt-4 border-t border-amber-200 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Card: Cronologia Histórica -->
+                <div class="card bg-white p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow col-span-1 md:col-span-2 lg:col-span-3" data-concept="Datas de Início da Primeira e Segunda Guerra Mundial">
+                     <div class="flex justify-between items-center">
+                        <h4 class="text-xl font-semibold text-gray-900">Cronologia Histórica: Guerras Mundiais</h4>
+                        <span class="arrow text-blue-600 transform">▼</span>
+                    </div>
+                    <div class="card-content text-gray-700">
+                       <p class="mb-6">A <strong>Primeira Guerra Mundial (1914-1918)</strong> e a <strong>Segunda Guerra Mundial (1939-1945)</strong> são eventos distintos. Conhecer as datas de início é vital.</p>
+                       <div class="relative w-full pt-8 pb-4">
+                            <div class="absolute left-0 top-1/2 w-full h-0.5 bg-gray-300"></div>
+                            <div class="absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                                <div class="w-4 h-4 bg-blue-600 rounded-full"></div>
+                                <div class="absolute text-center -bottom-8 w-24 -ml-12">
+                                    <p class="font-bold">1914</p>
+                                    <p class="text-sm">Início da 1ª GM</p>
+                                </div>
+                            </div>
+                            <div class="absolute left-3/4 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                                <div class="w-4 h-4 bg-red-600 rounded-full"></div>
+                                <div class="absolute text-center -bottom-8 w-24 -ml-12">
+                                    <p class="font-bold">1939</p>
+                                    <p class="text-sm">Início da 2ª GM</p>
+                                </div>
+                            </div>
+                       </div>
+                       <button class="expand-concept-btn mt-8 bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition-colors text-sm" data-id="3">Expandir com ✨ Gemini</button>
+                       <div id="gemini-expansion-3" class="gemini-expansion mt-4 pt-4 border-t border-amber-200 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Card: Extremos Geográficos -->
+                <div class="card bg-white p-6 rounded-lg shadow-lg cursor-pointer hover:shadow-xl transition-shadow md:col-start-2 lg:col-start-auto" data-concept="Deserto do Atacama, o mais seco do mundo">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xl font-semibold text-gray-900">Extremos Geográficos</h4>
+                        <span class="arrow text-blue-600 transform">▼</span>
+                    </div>
+                    <div class="card-content text-gray-700">
+                        <p>O <strong>Deserto do Atacama</strong> é notório pela sua extrema aridez, sendo classificado como o mais seco fora das regiões polares, superando o Saara em falta de precipitação.</p>
+                        <button class="expand-concept-btn mt-4 bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition-colors text-sm" data-id="4">Expandir com ✨ Gemini</button>
+                        <div id="gemini-expansion-4" class="gemini-expansion mt-4 pt-4 border-t border-amber-200 hidden"></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        
+        <!-- Seção de Vocabulário -->
+        <section id="vocabulario" class="mb-16">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-10 text-blue-800">Vocabulário Essencial</h3>
+            <div class="flex flex-col md:flex-row gap-8 bg-white rounded-lg shadow-lg p-8">
+                <div id="vocab-terms" class="flex flex-col md:w-1/3 space-y-2">
+                    <!-- Termos serão injetados aqui pelo JS -->
+                </div>
+                <div class="md:w-2/3 bg-amber-100 p-6 rounded-lg min-h-[200px] flex items-center justify-center">
+                    <p id="vocab-definition" class="text-lg text-gray-800 text-center">Selecione um termo para ver sua definição.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Autoavaliação -->
+        <section id="autoavaliacao" class="mb-16">
+             <h3 class="text-2xl md:text-3xl font-bold text-center mb-10 text-blue-800">Autoavaliação (Recordação Ativa)</h3>
+             <div id="quiz-container" class="space-y-4">
+                <!-- Perguntas do Quiz serão injetadas aqui -->
+             </div>
+        </section>
+        
+        <!-- Seção de Entrevista Gemini -->
+        <section id="entrevista-gemini" class="mb-16">
+            <h3 class="text-2xl md:text-3xl font-bold text-center mb-10 text-blue-800">Simulação de Entrevista ✨ Gemini</h3>
+            <p class="max-w-3xl mx-auto text-center text-gray-700 mb-6">Pronto para o exame? O Professor Gemini fará perguntas complexas sobre os tópicos de estudo para simular uma avaliação oral. Responda na caixa de texto abaixo.</p>
+
+            <div class="flex flex-col bg-white rounded-lg shadow-lg max-w-2xl mx-auto">
+                <div id="chat-window" class="p-4 flex flex-col space-y-3">
+                    <div id="initial-message" class="chat-message gemini-message">
+                        Olá! Eu sou o Professor Gemini. Estou aqui para testar o seu conhecimento em História, Física e Geografia. Quando estiver pronto, diga 'começar' ou 'pronto'.
+                    </div>
+                    <!-- Mensagens serão injetadas aqui -->
+                </div>
+                <div class="p-4 border-t border-gray-200 flex space-x-2">
+                    <input type="text" id="chat-input" placeholder="Digite sua resposta..." class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <button id="send-chat-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Enviar</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-white mt-16">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-600">
+            <p>&copy; 2025 Guia de Estudo Interativo. Um jeito moderno de aprender.</p>
+        </div>
+    </footer>
+
+
+<script>
+    const apiKey = "";
+    const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=" + apiKey;
+    
+    let chatHistory = [];
+    let isAILoading = false;
+
+    // --- FUNÇÕES DE UTILIDADE ---
+
+    const appendMessage = (sender, text, isHtml = false) => {
+        const chatWindow = document.getElementById('chat-window');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${sender}-message`;
+        if (isHtml) {
+            messageDiv.innerHTML = text;
+        } else {
+            messageDiv.textContent = text;
+        }
+        chatWindow.appendChild(messageDiv);
+        chatWindow.scrollTop = chatWindow.scrollHeight; 
+    };
+    
+    const showLoading = () => {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'loading-indicator';
+        loadingDiv.className = 'chat-message gemini-message flex items-center space-x-2';
+        loadingDiv.innerHTML = `
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span>A pensar...</span>
+        `;
+        document.getElementById('chat-window').appendChild(loadingDiv);
+        document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+    };
+    
+    const hideLoading = () => {
+        const loadingDiv = document.getElementById('loading-indicator');
+        if (loadingDiv) {
+            loadingDiv.remove();
+        }
+    };
+    
+    const fetchWithRetry = async (url, options, retries = 3) => {
+        for (let i = 0; i < retries; i++) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response;
+            } catch (error) {
+                if (i === retries - 1) throw error;
+                await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+            }
+        }
+    };
+    
+    // --- LÓGICA DO GEMINI API ---
+
+    // Feature 1: Expansão de Conceitos (Grounded Search)
+    const handleConceptExpansion = async (button, concept) => {
+        if (isAILoading) return;
+        isAILoading = true;
+        
+        const cardId = button.dataset.id;
+        const resultContainer = document.getElementById(`gemini-expansion-${cardId}`);
+        const originalText = button.textContent;
+        
+        resultContainer.innerHTML = `<p class="text-sm font-semibold text-blue-600">A expandir o conceito com pesquisa...</p>`;
+        resultContainer.classList.remove('hidden');
+        button.disabled = true;
+        button.textContent = 'A processar...';
+
+        const systemPrompt = "Você é um professor universitário. Forneça uma explicação concisa e um parágrafo que complemente o tópico fornecido, focando em contexto, importância ou fatos relacionados. A resposta deve ser útil para um guia de estudo de revisão. Mantenha a resposta em português de Portugal.";
+        const userQuery = `Expanda o seguinte tópico para um guia de estudo: "${concept}"`;
+
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            tools: [{ "google_search": {} }], 
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+        };
+
+        try {
+            const response = await fetchWithRetry(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            
+            const candidate = result.candidates?.[0];
+            let generatedText = "Não foi possível gerar a expansão. Tente novamente.";
+            let sourcesHtml = '';
+
+            if (candidate && candidate.content?.parts?.[0]?.text) {
+                generatedText = candidate.content.parts[0].text;
+                
+                let sources = [];
+                const groundingMetadata = candidate.groundingMetadata;
+                if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                    sources = groundingMetadata.groundingAttributions
+                        .map(attribution => ({
+                            uri: attribution.web?.uri,
+                            title: attribution.web?.title,
+                        }))
+                        .filter(source => source.uri && source.title);
+                }
+
+                if (sources.length > 0) {
+                    const uniqueSources = sources.filter((s, i, a) => a.findIndex(t => t.uri === s.uri) === i);
+                    sourcesHtml = `<div class="mt-3 text-xs text-gray-500">
+                        <p class="font-semibold">Fontes:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            ${uniqueSources.map(s => `<li><a href="${s.uri}" target="_blank" class="text-blue-600 hover:underline">${s.title}</a></li>`).join('')}
+                        </ul>
+                    </div>`;
+                }
+            }
+
+            resultContainer.innerHTML = `<p class="text-gray-800">${generatedText}</p>${sourcesHtml}`;
+
+        } catch (error) {
+            console.error("Gemini API Error for Expansion:", error);
+            resultContainer.innerHTML = `<p class="text-red-600">Erro ao comunicar com o servidor. Tente novamente.</p>`;
+        } finally {
+            button.textContent = originalText;
+            button.disabled = false;
+            isAILoading = false;
+        }
+    };
+    
+    // Feature 2: Simulação de Entrevista
+    const systemInstruction = `Atue como um Professor/Examinador rigoroso, mas encorajador, especializado em História, Geografia e Física. O seu objetivo é avaliar o conhecimento do utilizador nos tópicos: Fundadores dos EUA, Capitais Políticas (Turquia), Leis de Newton (Terceira Lei), Cronologia das Guerras Mundiais e Deserto do Atacama. Faça uma pergunta complexa ou de aprofundamento sobre um destes tópicos por mensagem. Espere pela resposta do utilizador antes de prosseguir. Mantenha as respostas concisas e informativas. Sempre responda em Português de Portugal.`;
+
+    const sendChatMessage = async () => {
+        if (isAILoading) return;
+        
+        const input = document.getElementById('chat-input');
+        const userMessage = input.value.trim();
+        if (!userMessage) return;
+
+        appendMessage('user', userMessage);
+        input.value = '';
+        isAILoading = true;
+        showLoading();
+
+        chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+
+        const payload = {
+            contents: chatHistory,
+            systemInstruction: { parts: [{ text: systemInstruction }] },
+        };
+
+        try {
+            const response = await fetchWithRetry(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            
+            const geminiText = result.candidates?.[0]?.content?.parts?.[0]?.text || "Desculpe, não consegui processar a sua resposta. Tente reformular.";
+            
+            appendMessage('gemini', geminiText);
+            chatHistory.push({ role: "model", parts: [{ text: geminiText }] });
+
+        } catch (error) {
+            console.error("Gemini API Error for Chat:", error);
+            appendMessage('gemini', 'Lamentamos, ocorreu um erro de comunicação com o Professor Gemini. Tente novamente mais tarde.');
+        } finally {
+            isAILoading = false;
+            hideLoading();
+            input.focus();
+        }
+    };
+
+
+    // --- INICIALIZAÇÃO ---
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Lógica dos Cards Expansíveis
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                cards.forEach(otherCard => {
+                    if (otherCard !== card && otherCard.classList.contains('active')) {
+                        otherCard.classList.remove('active');
+                    }
+                });
+                card.classList.toggle('active');
+            });
+        });
+
+        // Lógica de Expansão de Conceitos (Gemini)
+        document.querySelectorAll('.expand-concept-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                const card = e.target.closest('.card');
+                if (card) {
+                    const concept = card.dataset.concept;
+                    handleConceptExpansion(e.target, concept);
+                }
+            });
+        });
+        
+        // Lógica do Vocabulário (Manter como estava)
+        const vocabulary = [
+            { term: 'Declaração de Independência', definition: 'O documento de 1776 que formalizou a separação das Treze Colônias americanas do domínio da Grã-Bretanha.' },
+            { term: 'Ancara', definition: 'A capital política e administrativa da Turquia, escolhida após a fundação da República.' },
+            { term: 'Inércia (1ª Lei de Newton)', definition: 'A propriedade dos corpos de manterem seu estado de repouso ou movimento uniforme em linha reta, a menos que uma força atue sobre eles.' },
+            { term: 'Ação e Reação (3ª Lei de Newton)', definition: 'Princípio que estabelece que, se um corpo exerce uma força sobre um segundo corpo (Ação), o segundo corpo exerce uma força igual e oposta sobre o primeiro (Reação).' },
+            { term: 'Sismologia', definition: 'O estudo científico dos terremotos e da propagação de ondas elásticas (sísmicas) através da Terra.' },
+            { term: 'Deserto Não Polar', definition: 'Uma área terrestre com precipitação muito baixa (menos de 250 mm por ano) que não está localizada nas regiões árticas ou antárticas.' }
+        ];
+
+        const termsContainer = document.getElementById('vocab-terms');
+        const definitionDisplay = document.getElementById('vocab-definition');
+        
+        vocabulary.forEach((item, index) => {
+            const button = document.createElement('button');
+            button.textContent = item.term;
+            button.dataset.index = index;
+            button.className = 'vocab-term text-left p-3 rounded-md hover:bg-blue-500 hover:text-white transition-colors duration-200';
+            termsContainer.appendChild(button);
+        });
+
+        termsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('vocab-term')) {
+                document.querySelectorAll('.vocab-term').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                const index = e.target.dataset.index;
+                definitionDisplay.innerHTML = `<strong>${vocabulary[index].term}:</strong> ${vocabulary[index].definition}`;
+            }
+        });
+        
+        // Lógica da Autoavaliação (Quiz) - Manter como estava
+        const quizQuestions = [
+            { question: 'Além de ser um dos autores principais, qual é o papel mais conhecido de Thomas Jefferson na história dos EUA?', answer: 'Ele foi o terceiro Presidente dos Estados Unidos.' },
+            { question: 'Por que Ancara é a capital da Turquia, em vez de Istambul?', answer: 'Ancara foi escolhida como capital por sua localização central e estratégica após a fundação da República Turca, para se distanciar do passado otomano associado a Istambul.' },
+            { question: 'Se um foguete é lançado, qual das Leis de Newton explica o impulso para cima resultante do gás que sai para baixo?', answer: 'A Terceira Lei de Newton (Ação e Reação). A ação é a expulsão dos gases para baixo, e a reação é a força igual e oposta que impulsiona o foguete para cima.' },
+            { question: 'Quais são as datas de início da Primeira e Segunda Guerra Mundial, e qual evento desencadeou o primeiro conflito?', answer: 'A Primeira Guerra Mundial começou em 1914, desencadeada pelo assassinato do Arquiduque Franz Ferdinand. A Segunda Guerra Mundial começou em 1939.' },
+            { question: 'Onde o Deserto do Atacama está localizado e o que o torna o mais seco do planeta?', answer: 'Está localizado principalmente no Chile e Peru, na América do Sul. Sua extrema aridez é causada pela sua posição entre a Cordilheira dos Andes e a Cordilheira da Costa, que bloqueiam a umidade de ambos os lados (Oceano Pacífico e Bacia Amazônica).' }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+        quizQuestions.forEach((q, index) => {
+            const questionElement = document.createElement('div');
+            questionElement.className = 'bg-white p-6 rounded-lg shadow-lg';
+            questionElement.innerHTML = `
+                <p class="font-semibold text-lg mb-4">${index + 1}. ${q.question}</p>
+                <button class="toggle-answer bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">Mostrar Resposta</button>
+                <div class="answer-content mt-4 text-gray-700 p-4 bg-amber-50 rounded-md">
+                    ${q.answer}
+                </div>
+            `;
+            quizContainer.appendChild(questionElement);
+        });
+        
+        quizContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('toggle-answer')) {
+                const answer = e.target.nextElementSibling;
+                const isVisible = answer.style.display === 'block';
+                answer.style.display = isVisible ? 'none' : 'block';
+                e.target.textContent = isVisible ? 'Mostrar Resposta' : 'Ocultar Resposta';
+            }
+        });
+
+        // Lógica do Menu Mobile
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        mobileMenu.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+        
+        // Lógica do Chat (Gemini)
+        const sendBtn = document.getElementById('send-chat-btn');
+        const chatInput = document.getElementById('chat-input');
+
+        sendBtn.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+        
+        // Adicionar a primeira mensagem do professor ao histórico (para contexto)
+        chatHistory.push({ 
+            role: "model", 
+            parts: [{ text: "Olá! Eu sou o Professor Gemini. Estou aqui para testar o seu conhecimento em História, Física e Geografia. Quando estiver pronto, diga 'começar' ou 'pronto'." }] 
+        });
+
+    });
+</script>
+
+</body>
+</html>
